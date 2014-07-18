@@ -9,7 +9,7 @@
   </parent>
   <artifactId>guava</artifactId>
   <name>Guava: Google Core Libraries for Java</name>
-  <packaging>bundle</packaging>
+  <!--   <packaging>bundle</packaging> -->
   <description>
     Guava is a suite of core and expanded libraries that include
     utility classes, google's collections, io classes, and much
