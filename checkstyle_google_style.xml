@@ -46,6 +46,12 @@
         <!-- See http://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s3-source-file-structure -->
         <module name="DeclarationOrder"/>
         <!-- TODO: License or copyright -->
+        <module name="HiddenField">
+          <property name="ignoreSetter" value="true"/>
+          <property name="setterCanReturnItsClass" value="true"/>
+          <property name="ignoreConstructorParameter" value="true"/>
+          <property name="ignoreAbstractMethods" value="true"/>
+        </module>
         <module name="LineLength">
             <property name="max" value="100"/>
             <property name="ignorePattern" value="^package"/>

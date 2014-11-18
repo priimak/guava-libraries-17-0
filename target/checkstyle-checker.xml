@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+          "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+          "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<!--
+
+    Checkstyle configurartion that checks the Google coding conventions from:
+
+    -  Google Java Style
+       https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
+
+    Checkstyle is very configurable. Be sure to read the documentation at
+    http://checkstyle.sf.net (or in your downloaded distribution).
+
+    Most Checks are configurable, be sure to consult the documentation.
+
+    To completely disable a check, just comment it out or delete it from the file.
+
+    Finally, it is worth reading the documentation.
+
+ -->
+
+<module name = "Checker">
+    <property name="charset" value="UTF-8"/>
+
+    <property name="severity" value="warning"/>
+
+    <!-- Checks for whitespace                               -->
+    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <module name="FileTabCharacter"/>
+
+    <!-- TODO -->
+    <!-- Miscellaneous other checks. -->
+    <!-- See http://checkstyle.sf.net/config_misc.html -->
+    <!-- <module name="RegexpSingleline"> -->
+
+    <module name="TreeWalker">
+
+        <!-- Checks for Source file basics -->
+        <!-- See http://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s2-source-file-basics -->
+        <module name="OuterTypeFilename"/>
+        <!-- TODO: configure to Non-ASCII characters -->
+
+        <!-- Checks for Source file structure -->
+        <!-- See http://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s3-source-file-structure -->
+        <module name="DeclarationOrder"/>
+        <!-- TODO: License or copyright -->
+        <module name="HiddenField">
+          <property name="ignoreSetter" value="true"/>
+          <property name="setterCanReturnItsClass" value="true"/>
+          <property name="ignoreConstructorParameter" value="true"/>
+          <property name="ignoreAbstractMethods" value="true"/>
+        </module>
+        <module name="LineLength">
+            <property name="max" value="100"/>
+            <property name="ignorePattern" value="^package"/>
+            <property name="ignorePattern" value="^import"/>
+        </module>
+        <module name="AvoidStarImport"/>
+        <module name="NeedBraces"/>
+        <module name="LeftCurly"/>
+        <module name="RightCurly"/>
+        <!-- TODO <module name="EmptyBlock"/> -->
+        <module name="OneStatementPerLine"/>
+        <!-- TODO Indent continuation lines at least +4 spaces -->
+        <!-- TODO Vertical Whitespace -->
+        <!-- TODO Horizontal whitespace -->
+        <!-- TODO Enum classes -->
+        <module name="MultipleVariableDeclarations"/>
+        <!-- TODO Array initializers: can be "block-like" -->
+        <module name="ArrayTypeStyle"/>
+        <module name="MissingSwitchDefault"/>
+        <!-- TODO Indentation -->
+        <module name="FallThrough"/>
+        <!-- TODO Annotations -->
+        <!-- TODO Block comment style -->
+        <module name="UpperEll"/>
+
+        <!-- Checks for Naming -->
+        <!-- See http://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s5-naming-->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+        <module name="TypeName"/>
+        <module name="MethodName">
+            <property name="format" value="(^[a-z][a-zA-Z0-9]*$)|(^(test)[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$)"/>
+        </module>
+        <module name="ConstantName"/>
+        <module name="MemberName"/>
+        <module name="ParameterName"/>
+        <module name="LocalVariableName"/>
+        <module name="ClassTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+        </module>
+        <module name="MethodTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+        </module>
+
+        <!-- Checks for Programming Practice -->
+        <!-- See  http://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s6-programming-practices-->
+        <!-- TODO  Caught exceptions: not ignored-->
+        <module name="NoFinalizer"/>
+
+        <!-- Checks for Javadoc -->
+        <!-- See  http://google-styleguide.googlecode.com/svn/trunk/javaguide.html#s7-javadoc-->
+        <!-- TODO ALL CASES -->
+    </module>
+</module>
+
+
+
+

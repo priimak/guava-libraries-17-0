@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Optional xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/com/google/common/base/Optional.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * Copyright (C) 2011 The Guava Authors</em>
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_comment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <em class="jxr_comment"> * You may obtain a copy of the License at</em>
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <em class="jxr_comment"> * <a href="http://www.apache.org/licenses/LICENSE-2.0" target="alexandria_uri">http://www.apache.org/licenses/LICENSE-2.0</a></em>
+<a class="jxr_linenumber" name="9" href="#9">9</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="10" href="#10">10</a>  <em class="jxr_comment"> * Unless required by applicable law or agreed to in writing, software</em>
+<a class="jxr_linenumber" name="11" href="#11">11</a>  <em class="jxr_comment"> * distributed under the License is distributed on an "AS IS" BASIS,</em>
+<a class="jxr_linenumber" name="12" href="#12">12</a>  <em class="jxr_comment"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_comment"> * See the License for the specific language governing permissions and</em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>  <em class="jxr_comment"> * limitations under the License.</em>
+<a class="jxr_linenumber" name="15" href="#15">15</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="16" href="#16">16</a>  
+<a class="jxr_linenumber" name="17" href="#17">17</a>  <strong class="jxr_keyword">package</strong> com.google.common.base;
+<a class="jxr_linenumber" name="18" href="#18">18</a>  
+<a class="jxr_linenumber" name="19" href="#19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.google.common.base.Preconditions.checkNotNull;
+<a class="jxr_linenumber" name="20" href="#20">20</a>  
+<a class="jxr_linenumber" name="21" href="#21">21</a>  <strong class="jxr_keyword">import</strong> com.google.common.annotations.Beta;
+<a class="jxr_linenumber" name="22" href="#22">22</a>  <strong class="jxr_keyword">import</strong> com.google.common.annotations.GwtCompatible;
+<a class="jxr_linenumber" name="23" href="#23">23</a>  
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> java.io.Serializable;
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> java.util.Iterator;
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="27" href="#27">27</a>  
+<a class="jxr_linenumber" name="28" href="#28">28</a>  <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="29" href="#29">29</a>  
+<a class="jxr_linenumber" name="30" href="#30">30</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="31" href="#31">31</a>  <em class="jxr_javadoccomment"> * An immutable object that may contain a non-null reference to another object. Each</em>
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <em class="jxr_javadoccomment"> * instance of this type either contains a non-null reference, or contains nothing (in</em>
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <em class="jxr_javadoccomment"> * which case we say that the reference is "absent"); it is never said to "contain {@code</em>
+<a class="jxr_linenumber" name="34" href="#34">34</a>  <em class="jxr_javadoccomment"> * null}".</em>
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="36" href="#36">36</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;A non-null {@code Optional&lt;T&gt;} reference can be used as a replacement for a nullable</em>
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <em class="jxr_javadoccomment"> * {@code T} reference. It allows you to represent "a {@code T} that must be present" and</em>
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <em class="jxr_javadoccomment"> * a "a {@code T} that might be absent" as two distinct types in your program, which can</em>
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <em class="jxr_javadoccomment"> * aid clarity.</em>
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="41" href="#41">41</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;Some uses of this class include</em>
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * &lt;ul&gt;</em>
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;As a method return type, as an alternative to returning {@code null} to indicate</em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> *     that no value was available</em>
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;To distinguish between "unknown" (for example, not present in a map) and "known to</em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> *     have no value" (present in the map, with value {@code Optional.absent()})</em>
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;To wrap nullable references for storage in a collection that does not support</em>
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment"> *     {@code null} (though there are</em>
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment"> *     &lt;a href="<a href="http://code.google.com/p/guava-libraries/wiki/LivingWithNullHostileCollections" target="alexandria_uri">http://code.google.com/p/guava-libraries/wiki/LivingWithNullHostileCollections</a>"&gt;</em>
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment"> *     several other approaches to this&lt;/a&gt; that should be considered first)</em>
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> * &lt;/ul&gt;</em>
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;A common alternative to using this class is to find or create a suitable</em>
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment"> * &lt;a href="<a href="http://en.wikipedia.org/wiki/Null_Object_pattern" target="alexandria_uri">http://en.wikipedia.org/wiki/Null_Object_pattern</a>"&gt;null object&lt;/a&gt; for the</em>
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment"> * type in question.</em>
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;This class is not intended as a direct analogue of any existing "option" or "maybe"</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment"> * construct from other programming environments, though it may bear some similarities.</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;See the Guava User Guide article on &lt;a</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment"> * href="<a href="http://code.google.com/p/guava-libraries/wiki/UsingAndAvoidingNullExplained" target="alexandria_uri">http://code.google.com/p/guava-libraries/wiki/UsingAndAvoidingNullExplained</a>#Optional"&gt;</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment"> * using {@code Optional}&lt;/a&gt;.</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment"> * @param &lt;T&gt; the type of instance that can be contained. {@code Optional} is naturally</em>
+<a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment"> *     covariant on this type, so it is safe to cast an {@code Optional&lt;T&gt;} to {@code</em>
+<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment"> *     Optional&lt;S&gt;} for any supertype {@code S} of {@code T}.</em>
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment"> * @author Kurt Alfred Kluever</em>
+<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment"> * @author Kevin Bourrillion</em>
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment"> * @since 10.0</em>
+<a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="72" href="#72">72</a>  @GwtCompatible(serializable = <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="73" href="#73">73</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> Optional&lt;T&gt; <strong class="jxr_keyword">implements</strong> Serializable {
+<a class="jxr_linenumber" name="74" href="#74">74</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_javadoccomment">   * Returns an {@code Optional} instance with no contained reference.</em>
+<a class="jxr_linenumber" name="76" href="#76">76</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="77" href="#77">77</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; Optional&lt;T&gt; absent() {
+<a class="jxr_linenumber" name="78" href="#78">78</a>      <strong class="jxr_keyword">return</strong> Absent.withType();
+<a class="jxr_linenumber" name="79" href="#79">79</a>    }
+<a class="jxr_linenumber" name="80" href="#80">80</a>  
+<a class="jxr_linenumber" name="81" href="#81">81</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="82" href="#82">82</a>  <em class="jxr_javadoccomment">   * Returns an {@code Optional} instance containing the given non-null reference.</em>
+<a class="jxr_linenumber" name="83" href="#83">83</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="84" href="#84">84</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; Optional&lt;T&gt; of(T reference) {
+<a class="jxr_linenumber" name="85" href="#85">85</a>      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Present&lt;T&gt;(checkNotNull(reference));
+<a class="jxr_linenumber" name="86" href="#86">86</a>    }
+<a class="jxr_linenumber" name="87" href="#87">87</a>  
+<a class="jxr_linenumber" name="88" href="#88">88</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">   * If {@code nullableReference} is non-null, returns an {@code Optional} instance containing that</em>
+<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">   * reference; otherwise returns {@link Optional#absent}.</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="92" href="#92">92</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; Optional&lt;T&gt; fromNullable(@Nullable T nullableReference) {
+<a class="jxr_linenumber" name="93" href="#93">93</a>      <strong class="jxr_keyword">return</strong> (nullableReference == <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="94" href="#94">94</a>          ? Optional.&lt;T&gt;absent()
+<a class="jxr_linenumber" name="95" href="#95">95</a>          : <strong class="jxr_keyword">new</strong> Present&lt;T&gt;(nullableReference);
+<a class="jxr_linenumber" name="96" href="#96">96</a>    }
+<a class="jxr_linenumber" name="97" href="#97">97</a>  
+<a class="jxr_linenumber" name="98" href="#98">98</a>    <a href="../../../../com/google/common/base/Optional.html">Optional</a>() {}
+<a class="jxr_linenumber" name="99" href="#99">99</a>  
+<a class="jxr_linenumber" name="100" href="#100">100</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="101" href="#101">101</a> <em class="jxr_javadoccomment">   * Returns {@code true} if this holder contains a (non-null) instance.</em>
+<a class="jxr_linenumber" name="102" href="#102">102</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="103" href="#103">103</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">boolean</strong> isPresent();
+<a class="jxr_linenumber" name="104" href="#104">104</a> 
+<a class="jxr_linenumber" name="105" href="#105">105</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="106" href="#106">106</a> <em class="jxr_javadoccomment">   * Returns the contained instance, which must be present. If the instance might be</em>
+<a class="jxr_linenumber" name="107" href="#107">107</a> <em class="jxr_javadoccomment">   * absent, use {@link #or(Object)} or {@link #orNull} instead.</em>
+<a class="jxr_linenumber" name="108" href="#108">108</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="109" href="#109">109</a> <em class="jxr_javadoccomment">   * @throws IllegalStateException if the instance is absent ({@link #isPresent} returns</em>
+<a class="jxr_linenumber" name="110" href="#110">110</a> <em class="jxr_javadoccomment">   *     {@code false})</em>
+<a class="jxr_linenumber" name="111" href="#111">111</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="112" href="#112">112</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> T get();
+<a class="jxr_linenumber" name="113" href="#113">113</a> 
+<a class="jxr_linenumber" name="114" href="#114">114</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="115" href="#115">115</a> <em class="jxr_javadoccomment">   * Returns the contained instance if it is present; {@code defaultValue} otherwise. If</em>
+<a class="jxr_linenumber" name="116" href="#116">116</a> <em class="jxr_javadoccomment">   * no default value should be required because the instance is known to be present, use</em>
+<a class="jxr_linenumber" name="117" href="#117">117</a> <em class="jxr_javadoccomment">   * {@link #get()} instead. For a default value of {@code null}, use {@link #orNull}.</em>
+<a class="jxr_linenumber" name="118" href="#118">118</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="119" href="#119">119</a> <em class="jxr_javadoccomment">   * &lt;p&gt;Note about generics: The signature {@code public T or(T defaultValue)} is overly</em>
+<a class="jxr_linenumber" name="120" href="#120">120</a> <em class="jxr_javadoccomment">   * restrictive. However, the ideal signature, {@code public &lt;S super T&gt; S or(S)}, is not legal</em>
+<a class="jxr_linenumber" name="121" href="#121">121</a> <em class="jxr_javadoccomment">   * Java. As a result, some sensible operations involving subtypes are compile errors:</em>
+<a class="jxr_linenumber" name="122" href="#122">122</a> <em class="jxr_javadoccomment">   * &lt;pre&gt;   {@code</em>
+<a class="jxr_linenumber" name="123" href="#123">123</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="124" href="#124">124</a> <em class="jxr_javadoccomment">   *   Optional&lt;Integer&gt; optionalInt = getSomeOptionalInt();</em>
+<a class="jxr_linenumber" name="125" href="#125">125</a> <em class="jxr_javadoccomment">   *   Number value = optionalInt.or(0.5); // error</em>
+<a class="jxr_linenumber" name="126" href="#126">126</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="127" href="#127">127</a> <em class="jxr_javadoccomment">   *   FluentIterable&lt;? extends Number&gt; numbers = getSomeNumbers();</em>
+<a class="jxr_linenumber" name="128" href="#128">128</a> <em class="jxr_javadoccomment">   *   Optional&lt;? extends Number&gt; first = numbers.first();</em>
+<a class="jxr_linenumber" name="129" href="#129">129</a> <em class="jxr_javadoccomment">   *   Number value = first.or(0.5); // error}&lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="130" href="#130">130</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="131" href="#131">131</a> <em class="jxr_javadoccomment">   * &lt;p&gt;As a workaround, it is always safe to cast an {@code Optional&lt;? extends T&gt;} to {@code</em>
+<a class="jxr_linenumber" name="132" href="#132">132</a> <em class="jxr_javadoccomment">   * Optional&lt;T&gt;}. Casting either of the above example {@code Optional} instances to {@code</em>
+<a class="jxr_linenumber" name="133" href="#133">133</a> <em class="jxr_javadoccomment">   * Optional&lt;Number&gt;} (where {@code Number} is the desired output type) solves the problem:</em>
+<a class="jxr_linenumber" name="134" href="#134">134</a> <em class="jxr_javadoccomment">   * &lt;pre&gt;   {@code</em>
+<a class="jxr_linenumber" name="135" href="#135">135</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="136" href="#136">136</a> <em class="jxr_javadoccomment">   *   Optional&lt;Number&gt; optionalInt = (Optional) getSomeOptionalInt();</em>
+<a class="jxr_linenumber" name="137" href="#137">137</a> <em class="jxr_javadoccomment">   *   Number value = optionalInt.or(0.5); // fine</em>
+<a class="jxr_linenumber" name="138" href="#138">138</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="139" href="#139">139</a> <em class="jxr_javadoccomment">   *   FluentIterable&lt;? extends Number&gt; numbers = getSomeNumbers();</em>
+<a class="jxr_linenumber" name="140" href="#140">140</a> <em class="jxr_javadoccomment">   *   Optional&lt;Number&gt; first = (Optional) numbers.first();</em>
+<a class="jxr_linenumber" name="141" href="#141">141</a> <em class="jxr_javadoccomment">   *   Number value = first.or(0.5); // fine}&lt;/pre&gt;</em>
+<a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="143" href="#143">143</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> T or(T defaultValue);
+<a class="jxr_linenumber" name="144" href="#144">144</a> 
+<a class="jxr_linenumber" name="145" href="#145">145</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a> <em class="jxr_javadoccomment">   * Returns this {@code Optional} if it has a value present; {@code secondChoice}</em>
+<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">   * otherwise.</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="149" href="#149">149</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> Optional&lt;T&gt; or(Optional&lt;? <strong class="jxr_keyword">extends</strong> T&gt; secondChoice);
+<a class="jxr_linenumber" name="150" href="#150">150</a> 
+<a class="jxr_linenumber" name="151" href="#151">151</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="152" href="#152">152</a> <em class="jxr_javadoccomment">   * Returns the contained instance if it is present; {@code supplier.get()} otherwise. If the</em>
+<a class="jxr_linenumber" name="153" href="#153">153</a> <em class="jxr_javadoccomment">   * supplier returns {@code null}, a {@link NullPointerException} is thrown.</em>
+<a class="jxr_linenumber" name="154" href="#154">154</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_javadoccomment">   * @throws NullPointerException if the supplier returns {@code null}</em>
+<a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="157" href="#157">157</a>   @Beta
+<a class="jxr_linenumber" name="158" href="#158">158</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> T or(Supplier&lt;? <strong class="jxr_keyword">extends</strong> T&gt; supplier);
+<a class="jxr_linenumber" name="159" href="#159">159</a> 
+<a class="jxr_linenumber" name="160" href="#160">160</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="161" href="#161">161</a> <em class="jxr_javadoccomment">   * Returns the contained instance if it is present; {@code null} otherwise. If the</em>
+<a class="jxr_linenumber" name="162" href="#162">162</a> <em class="jxr_javadoccomment">   * instance is known to be present, use {@link #get()} instead.</em>
+<a class="jxr_linenumber" name="163" href="#163">163</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="164" href="#164">164</a>   @Nullable
+<a class="jxr_linenumber" name="165" href="#165">165</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> T orNull();
+<a class="jxr_linenumber" name="166" href="#166">166</a> 
+<a class="jxr_linenumber" name="167" href="#167">167</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="168" href="#168">168</a> <em class="jxr_javadoccomment">   * Returns an immutable singleton {@link Set} whose only element is the contained instance</em>
+<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_javadoccomment">   * if it is present; an empty immutable {@link Set} otherwise.</em>
+<a class="jxr_linenumber" name="170" href="#170">170</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="171" href="#171">171</a> <em class="jxr_javadoccomment">   * @since 11.0</em>
+<a class="jxr_linenumber" name="172" href="#172">172</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="173" href="#173">173</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> Set&lt;T&gt; asSet();
+<a class="jxr_linenumber" name="174" href="#174">174</a> 
+<a class="jxr_linenumber" name="175" href="#175">175</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="176" href="#176">176</a> <em class="jxr_javadoccomment">   * If the instance is present, it is transformed with the given {@link Function}; otherwise,</em>
+<a class="jxr_linenumber" name="177" href="#177">177</a> <em class="jxr_javadoccomment">   * {@link Optional#absent} is returned. If the function returns {@code null}, a</em>
+<a class="jxr_linenumber" name="178" href="#178">178</a> <em class="jxr_javadoccomment">   * {@link NullPointerException} is thrown.</em>
+<a class="jxr_linenumber" name="179" href="#179">179</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="180" href="#180">180</a> <em class="jxr_javadoccomment">   * @throws NullPointerException if the function returns {@code null}</em>
+<a class="jxr_linenumber" name="181" href="#181">181</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="182" href="#182">182</a> <em class="jxr_javadoccomment">   * @since 12.0</em>
+<a class="jxr_linenumber" name="183" href="#183">183</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="184" href="#184">184</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> &lt;V&gt; Optional&lt;V&gt; transform(Function&lt;? <strong class="jxr_keyword">super</strong> T, V&gt; function);
+<a class="jxr_linenumber" name="185" href="#185">185</a> 
+<a class="jxr_linenumber" name="186" href="#186">186</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_javadoccomment">   * Returns {@code true} if {@code object} is an {@code Optional} instance, and either</em>
+<a class="jxr_linenumber" name="188" href="#188">188</a> <em class="jxr_javadoccomment">   * the contained references are {@linkplain Object#equals equal} to each other or both</em>
+<a class="jxr_linenumber" name="189" href="#189">189</a> <em class="jxr_javadoccomment">   * are absent. Note that {@code Optional} instances of differing parameterized types can</em>
+<a class="jxr_linenumber" name="190" href="#190">190</a> <em class="jxr_javadoccomment">   * be equal.</em>
+<a class="jxr_linenumber" name="191" href="#191">191</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="192" href="#192">192</a>   @Override
+<a class="jxr_linenumber" name="193" href="#193">193</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">boolean</strong> equals(@Nullable Object object);
+<a class="jxr_linenumber" name="194" href="#194">194</a> 
+<a class="jxr_linenumber" name="195" href="#195">195</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="196" href="#196">196</a> <em class="jxr_javadoccomment">   * Returns a hash code for this instance.</em>
+<a class="jxr_linenumber" name="197" href="#197">197</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="198" href="#198">198</a>   @Override
+<a class="jxr_linenumber" name="199" href="#199">199</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">int</strong> hashCode();
+<a class="jxr_linenumber" name="200" href="#200">200</a> 
+<a class="jxr_linenumber" name="201" href="#201">201</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="202" href="#202">202</a> <em class="jxr_javadoccomment">   * Returns a string representation for this instance. The form of this string</em>
+<a class="jxr_linenumber" name="203" href="#203">203</a> <em class="jxr_javadoccomment">   * representation is unspecified.</em>
+<a class="jxr_linenumber" name="204" href="#204">204</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="205" href="#205">205</a>   @Override
+<a class="jxr_linenumber" name="206" href="#206">206</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> String toString();
+<a class="jxr_linenumber" name="207" href="#207">207</a> 
+<a class="jxr_linenumber" name="208" href="#208">208</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="209" href="#209">209</a> <em class="jxr_javadoccomment">   * Returns the value of each present instance from the supplied {@code optionals}, in order,</em>
+<a class="jxr_linenumber" name="210" href="#210">210</a> <em class="jxr_javadoccomment">   * skipping over occurrences of {@link Optional#absent}. Iterators are unmodifiable and are</em>
+<a class="jxr_linenumber" name="211" href="#211">211</a> <em class="jxr_javadoccomment">   * evaluated lazily.</em>
+<a class="jxr_linenumber" name="212" href="#212">212</a> <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="213" href="#213">213</a> <em class="jxr_javadoccomment">   * @since 11.0 (generics widened in 13.0)</em>
+<a class="jxr_linenumber" name="214" href="#214">214</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="215" href="#215">215</a>   @Beta
+<a class="jxr_linenumber" name="216" href="#216">216</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; Iterable&lt;T&gt; presentInstances(
+<a class="jxr_linenumber" name="217" href="#217">217</a>       <strong class="jxr_keyword">final</strong> Iterable&lt;? <strong class="jxr_keyword">extends</strong> Optional&lt;? <strong class="jxr_keyword">extends</strong> T&gt;&gt; optionals) {
+<a class="jxr_linenumber" name="218" href="#218">218</a>     checkNotNull(optionals);
+<a class="jxr_linenumber" name="219" href="#219">219</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Iterable&lt;T&gt;() {
+<a class="jxr_linenumber" name="220" href="#220">220</a>       @Override
+<a class="jxr_linenumber" name="221" href="#221">221</a>       <strong class="jxr_keyword">public</strong> Iterator&lt;T&gt; iterator() {
+<a class="jxr_linenumber" name="222" href="#222">222</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> AbstractIterator&lt;T&gt;() {
+<a class="jxr_linenumber" name="223" href="#223">223</a>           <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Iterator&lt;? <strong class="jxr_keyword">extends</strong> Optional&lt;? <strong class="jxr_keyword">extends</strong> T&gt;&gt; iterator =
+<a class="jxr_linenumber" name="224" href="#224">224</a>               checkNotNull(optionals.iterator());
+<a class="jxr_linenumber" name="225" href="#225">225</a> 
+<a class="jxr_linenumber" name="226" href="#226">226</a>           @Override
+<a class="jxr_linenumber" name="227" href="#227">227</a>           <strong class="jxr_keyword">protected</strong> T computeNext() {
+<a class="jxr_linenumber" name="228" href="#228">228</a>             <strong class="jxr_keyword">while</strong> (iterator.hasNext()) {
+<a class="jxr_linenumber" name="229" href="#229">229</a>               Optional&lt;? <strong class="jxr_keyword">extends</strong> T&gt; optional = iterator.next();
+<a class="jxr_linenumber" name="230" href="#230">230</a>               <strong class="jxr_keyword">if</strong> (optional.isPresent()) {
+<a class="jxr_linenumber" name="231" href="#231">231</a>                 <strong class="jxr_keyword">return</strong> optional.get();
+<a class="jxr_linenumber" name="232" href="#232">232</a>               }
+<a class="jxr_linenumber" name="233" href="#233">233</a>             }
+<a class="jxr_linenumber" name="234" href="#234">234</a>             <strong class="jxr_keyword">return</strong> endOfData();
+<a class="jxr_linenumber" name="235" href="#235">235</a>           }
+<a class="jxr_linenumber" name="236" href="#236">236</a>         };
+<a class="jxr_linenumber" name="237" href="#237">237</a>       }
+<a class="jxr_linenumber" name="238" href="#238">238</a>     };
+<a class="jxr_linenumber" name="239" href="#239">239</a>   }
+<a class="jxr_linenumber" name="240" href="#240">240</a> 
+<a class="jxr_linenumber" name="241" href="#241">241</a>   <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 0;
+<a class="jxr_linenumber" name="242" href="#242">242</a> }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
+
