@@ -38,6 +38,11 @@ class AppendableWriter extends Writer {
   private final Appendable target;
   private boolean closed;
 
+  public AppendableWriter setClosed(boolean closed) {
+      this.closed = closed;
+      return this;
+  }
+
   /**
    * Creates a new writer that appends everything it writes to {@code target}.
    *
